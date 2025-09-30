@@ -6,7 +6,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 IMAGE_NAME="mesa-rpi5-builder"
-BUILD_DIR="build-rpi5"
+BUILD_DIR="build/rpi5"
 
 echo "Mesa V3DV Vulkan Driver Docker 빌드 시작..."
 
