@@ -1,0 +1,76 @@
+FROM ubuntu:22.04
+
+# 기본 설정
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# ARM64 아키텍처 추가
+RUN dpkg --add-architecture arm64
+
+# 패키지 업데이트 및 기본 도구 설치
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    ninja-build \
+    pkg-config \
+    python3-mako \
+    python3-pip \
+    git \
+    wget \
+    curl \
+    xz-utils \
+    bison \
+    flex \
+    gettext \
+    && apt-get clean
+
+# 최신 Meson 설치 (pip를 통해)
+RUN pip3 install meson==1.4.0
+
+# ARM64 크로스 컴파일러 설치
+RUN apt-get install -y \
+    gcc-aarch64-linux-gnu \
+    g++-aarch64-linux-gnu \
+    libc6-dev:arm64
+
+# Mesa 의존성 설치 (크로스 컴파일용)
+RUN apt-get install -y \
+    libdrm-dev:arm64 \
+    libexpat1-dev:arm64 \
+    libffi-dev:arm64 \
+    libelf-dev:arm64 \
+    zlib1g-dev:arm64 \
+    libwayland-dev:arm64 \
+    wayland-protocols:arm64 \
+    libwayland-egl-backend-dev:arm64 \
+    libx11-dev:arm64 \
+    libxext-dev:arm64 \
+    libxfixes-dev:arm64 \
+    libxcb-glx0-dev:arm64 \
+    libxcb-shm0-dev:arm64 \
+    libx11-xcb-dev:arm64 \
+    libxcb-dri2-0-dev:arm64 \
+    libxcb-dri3-dev:arm64 \
+    libxcb-present-dev:arm64 \
+    libxshmfence-dev:arm64 \
+    libxxf86vm-dev:arm64 \
+    libxrandr-dev:arm64 \
+    && apt-get clean
+
+# Python 의존성 설치
+RUN pip3 install mako PyYAML
+
+# 환경변수 설정
+ENV CC=aarch64-linux-gnu-gcc
+ENV CXX=aarch64-linux-gnu-g++
+ENV AR=aarch64-linux-gnu-ar
+ENV STRIP=aarch64-linux-gnu-strip
+ENV PKG_CONFIG_PATH="/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
+ENV PKG_CONFIG_LIBDIR="/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
+
+WORKDIR /mesa
+
+# 엔트리포인트 스크립트 생성
+COPY scripts/build/rpi5/build-rpi5.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/build-rpi5.sh
+
+CMD ["/usr/local/bin/build-rpi5.sh"]
