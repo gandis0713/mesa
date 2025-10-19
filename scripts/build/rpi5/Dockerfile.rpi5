@@ -69,8 +69,6 @@ ENV PKG_CONFIG_LIBDIR="/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig
 
 WORKDIR /mesa
 
-# 엔트리포인트 스크립트 생성
-COPY scripts/build/rpi5/build-rpi5.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/build-rpi5.sh
-
-CMD ["/usr/local/bin/build-rpi5.sh"]
+# 엔트리포인트: 호스트에서 마운트된 스크립트를 직접 사용
+# 이렇게 하면 스크립트 수정 시 Docker 이미지 재빌드 불필요
+CMD ["/mesa/scripts/build/rpi5/build-rpi5.sh"]
