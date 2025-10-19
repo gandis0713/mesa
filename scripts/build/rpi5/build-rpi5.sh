@@ -15,8 +15,10 @@ cd build/rpi5
 echo "빌드 디렉토리 생성 완료: $(pwd)"
 
 # Meson 설정
-meson setup ../../.. \
-  --cross-file=../../../scripts/build/rpi5/cross-arm64.txt \
+# 주의: build/rpi5에서 소스 디렉토리는 ../.. (2단계 위)
+# --cross-file은 절대 경로 사용 (Docker 컨테이너 내부 경로)
+meson setup ../.. \
+  --cross-file=/mesa/scripts/build/rpi5/cross-arm64.txt \
   -Dvulkan-drivers=broadcom \
   -Dgallium-drivers=v3d,vc4 \
   -Dplatforms=wayland,x11 \
