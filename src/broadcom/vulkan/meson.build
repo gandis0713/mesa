@@ -109,6 +109,17 @@ libvulkan_broadcom = shared_library(
   install : true,
 )
 
+# Custom build: Copy libvulkan_broadcom.so to libvulkan_changhyun.so
+libvulkan_changhyun = custom_target(
+  'libvulkan_changhyun',
+  input : libvulkan_broadcom,
+  output : 'libvulkan_changhyun.so',
+  command : ['cp', '@INPUT@', '@OUTPUT@'],
+  build_by_default : true,
+  install : true,
+  install_dir : get_option('libdir'),
+)
+
 if with_symbols_check
   test(
     'v3dv symbols check',
@@ -133,6 +144,26 @@ broadcom_icd = custom_target(
     '--api-version', '1.3', '--xml', '@INPUT1@',
     '--sizeof-pointer', sizeof_pointer,
     '--lib-path', vulkan_icd_lib_path / icd_file_name,
+    '--out', '@OUTPUT@',
+  ],
+  build_by_default : true,
+  install_dir : with_vulkan_icd_dir,
+  install_tag : 'runtime',
+  install : true,
+)
+
+# Custom ICD for libvulkan_changhyun.so
+icd_file_name_changhyun = libname_prefix + 'vulkan_changhyun.' + libname_suffix
+
+changhyun_icd = custom_target(
+  'changhyun_icd',
+  input : [vk_icd_gen, vk_api_xml],
+  output : 'changhyun_icd.json',
+  command : [
+    prog_python, '@INPUT0@',
+    '--api-version', '1.3', '--xml', '@INPUT1@',
+    '--sizeof-pointer', sizeof_pointer,
+    '--lib-path', icd_file_name_changhyun,
     '--out', '@OUTPUT@',
   ],
   build_by_default : true,
