@@ -153,7 +153,7 @@ broadcom_icd = custom_target(
 )
 
 # Custom ICD for libvulkan_changhyun.so
-icd_file_name_changhyun = libname_prefix + 'vulkan_changhyun.' + libname_suffix
+icd_file_name_changhyun = './' + libname_prefix + 'vulkan_changhyun.' + libname_suffix
 
 changhyun_icd = custom_target(
   'changhyun_icd',
